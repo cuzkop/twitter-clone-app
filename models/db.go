@@ -1,12 +1,17 @@
 package models
 
 import (
-	"database/sql"
+	// "database/sql"
+	// "database/sql"
+
 	"log"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 type DB struct {
-	DB *sql.DB
+	DB *gorm.DB
 }
 
 func init() {
@@ -15,9 +20,9 @@ func init() {
 }
 
 func NewSqlHandler() *DB {
-	conn, err := sql.Open("mysql", "root@tcp(127.0.0.1)/twitter")
+	conn, err := gorm.Open("mysql", "root:PASSWORD@tcp(127.0.0.1)/twitter")
 	if err != nil {
-		panic(err.Error)
+		log.Fatal(err)
 	}
 	sqlHandler := new(DB)
 	sqlHandler.DB = conn

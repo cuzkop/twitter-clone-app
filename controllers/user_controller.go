@@ -1,9 +1,9 @@
 package controllers
 
 type User struct {
-	ID        int
-	FirstName string
-	LastName  string
+	ID        int    `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 }
 
 func NewUserController() User {
