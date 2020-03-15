@@ -16,10 +16,10 @@ func CreateFavorite(f models.Favorites, m *models.DB) error {
 	return nil
 }
 
-func DeleteFavorite(t models.Favorites, m *models.DB) error {
-	// err := t.IsDeleteTweet(m)
-	// if err != nil {
-	// 	return err
-	// }
+func DeleteFavorite(f models.Favorites, m *models.DB) error {
+	err := f.DeleteTweet(m)
+	if err != nil {
+		return err
+	}
 	return nil
 }

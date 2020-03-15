@@ -27,7 +27,7 @@ func buildRouter() http.Handler {
 	r.HandleFunc("/tweets/{user_id}", tweetCreateHandler).Methods("POST")
 	r.HandleFunc("/tweets/{user_id}", tweetDeleteHandler).Methods("DELETE")
 	r.HandleFunc("/favorites/{user_id}", favoriteCreateHandler).Methods("POST")
-	// r.HandleFunc("/favorite/{user_id}", userCreateHandler).Methods("DELETE")
+	r.HandleFunc("/favorites/{user_id}", favoriteDeleteHandler).Methods("DELETE")
 	// r.HandleFunc("/comment/{name}", userCreateHandler)
 	return r
 }
@@ -114,6 +114,31 @@ func favoriteCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = controllers.CreateFavorite(favorites, m)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func favoriteDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	m := models.NewSqlHandler()
+	favorites := controllers.NewFavorites()
+	favorites.UserID, _ = strconv.Atoi(mux.Vars(r)["user_id"])
+
+	err := json.NewDecoder(r.Body).Decode(&favorites)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	err = controllers.DeleteFavorite(favorites, m)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusInternalServerError)
