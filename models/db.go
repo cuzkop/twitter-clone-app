@@ -20,7 +20,7 @@ func init() {
 }
 
 func NewSqlHandler() *DB {
-	conn, err := gorm.Open("mysql", "root:PASSWORD@tcp(127.0.0.1)/twitter")
+	conn, err := gorm.Open("mysql", "root:PASSWORD@tcp(127.0.0.1)/twitter?parseTime=true")
 	if err != nil {
 		log.Fatal(err)
 	}

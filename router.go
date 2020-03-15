@@ -26,9 +26,9 @@ func buildRouter() http.Handler {
 	r.HandleFunc("/timeline/{user_id}", timelineHandler).Methods("GET")
 	r.HandleFunc("/tweets/{user_id}", tweetCreateHandler).Methods("POST")
 	r.HandleFunc("/tweets/{user_id}", tweetDeleteHandler).Methods("DELETE")
-	r.HandleFunc("/favorite/{user_id}", userCreateHandler).Methods("POST")
-	r.HandleFunc("/favorite/{user_id}", userCreateHandler).Methods("DELETE")
-	r.HandleFunc("/comment/{name}", userCreateHandler)
+	r.HandleFunc("/favorites/{user_id}", favoriteCreateHandler).Methods("POST")
+	// r.HandleFunc("/favorite/{user_id}", userCreateHandler).Methods("DELETE")
+	// r.HandleFunc("/comment/{name}", userCreateHandler)
 	return r
 }
 
@@ -88,7 +88,7 @@ func tweetDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = controllers.CreateTweet(tweets, m)
+	err = controllers.IsDeleteTweet(tweets, m)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusInternalServerError)
@@ -99,12 +99,27 @@ func tweetDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func userCreateHandler(w http.ResponseWriter, r *http.Request) {
-	userController := controllers.NewUserController()
-	vars := mux.Vars(r)
-	user := userController.Create(vars["name"])
-
+func favoriteCreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(user)
+	m := models.NewSqlHandler()
+	favorites := controllers.NewFavorites()
+	favorites.UserID, _ = strconv.Atoi(mux.Vars(r)["user_id"])
+
+	err := json.NewDecoder(r.Body).Decode(&favorites)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	err = controllers.CreateFavorite(favorites, m)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

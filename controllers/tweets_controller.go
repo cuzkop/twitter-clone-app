@@ -15,3 +15,11 @@ func CreateTweet(t models.Tweets, m *models.DB) error {
 	}
 	return nil
 }
+
+func IsDeleteTweet(t models.Tweets, m *models.DB) error {
+	err := t.IsDeleteTweet(m)
+	if err != nil {
+		return err
+	}
+	return nil
+}
