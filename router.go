@@ -4,13 +4,16 @@ import (
 	"app/controllers"
 	"app/models"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
+
+type Error struct {
+	ErrorMsg string
+}
 
 func init() {
 	log.SetPrefix("[router]]")
@@ -21,8 +24,8 @@ func buildRouter() http.Handler {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/timeline/{user_id}", timelineHandler).Methods("GET")
-	r.HandleFunc("/tweets/{user_id}", userCreateHandler).Methods("POST")
-	r.HandleFunc("/tweets/{user_id}", userCreateHandler).Methods("DELETE")
+	r.HandleFunc("/tweets/{user_id}", tweetCreateHandler).Methods("POST")
+	r.HandleFunc("/tweets/{user_id}", tweetDeleteHandler).Methods("DELETE")
 	r.HandleFunc("/favorite/{user_id}", userCreateHandler).Methods("POST")
 	r.HandleFunc("/favorite/{user_id}", userCreateHandler).Methods("DELETE")
 	r.HandleFunc("/comment/{name}", userCreateHandler)
@@ -30,19 +33,77 @@ func buildRouter() http.Handler {
 }
 
 func timelineHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	m := models.NewSqlHandler()
-	timelineController := controllers.NewTimelineController()
-	vars := mux.Vars(r)
-	user_id, _ := strconv.Atoi(vars["user_id"])
-	timelines := timelineController.GetTimeline(user_id, m)
-	fmt.Println(timelines)
+	timeline := controllers.NewTimeline()
+	user_id, _ := strconv.Atoi(mux.Vars(r)["user_id"])
+	timelines, err := timeline.GetTimeline(user_id, m)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(timelines)
+}
+
+func tweetCreateHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	m := models.NewSqlHandler()
+	tweets := controllers.NewTweets()
+	tweets.UserID, _ = strconv.Atoi(mux.Vars(r)["user_id"])
+
+	err := json.NewDecoder(r.Body).Decode(&tweets)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	err = controllers.CreateTweet(tweets, m)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func tweetDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	m := models.NewSqlHandler()
+	tweets := controllers.NewTweets()
+	tweets.UserID, _ = strconv.Atoi(mux.Vars(r)["user_id"])
+
+	err := json.NewDecoder(r.Body).Decode(&tweets)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	err = controllers.CreateTweet(tweets, m)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	userController := controllers.NewUserController()
 	vars := mux.Vars(r)
 	user := userController.Create(vars["name"])
-	// w.Write([]byte(user.FirstName + user.LastName))
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	json.NewEncoder(w).Encode(user)

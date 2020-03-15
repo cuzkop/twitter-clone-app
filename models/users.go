@@ -19,15 +19,17 @@ func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
-func GetTimelineByUserId(users []int, m *DB) *sql.Rows {
+func GetTimelineByUserId(users []int, m *DB) (*sql.Rows, error) {
 	query := m.DB.Table("users").
 		Select("users.id as user_id, users.screen_name, tweets.id as tweet_id, tweets.text, tweets.created_at").
 		Joins("left join tweets on users.id = tweets.user_id").
-		Where("users.id in (?) and tweets.is_daleted = 0", users)
+		Where("users.id in (?) and tweets.is_daleted = 0", users).
+		Order("tweets.created_at desc")
 	rows, err := query.Rows()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
-	return rows
+	return rows, nil
 }
