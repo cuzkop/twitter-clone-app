@@ -9,6 +9,8 @@ type Tweets struct {
 	ID        int       `json:"id"`
 	UserID    int       `json:"user_id"`
 	Text      string    `json:"text"`
+	TweetID   int       `json:"tweet_id"`
+	IsComment int       `json:"is_comment"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	IsDeleted int       `json:"is_deleted"`

@@ -28,7 +28,7 @@ func (f Favorites) CreateFavorite(m *DB) error {
 }
 
 func (f Favorites) DeleteTweet(m *DB) error {
-	result := m.DB.Delete(&f)
+	result := m.DB.Where("user_id = ? and tweet_id = ?", f.UserID, f.TweetId).Delete(&f)
 	if result.Error != nil {
 		log.Println(result.Error)
 		return result.Error

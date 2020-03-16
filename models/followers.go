@@ -24,5 +24,5 @@ func GetFollowingByUid(uid int, m *DB) (FollowersList, error) {
 		return followersList, result.Error
 	}
 
-	return nil, result.Error
+	return followersList, result.Error
 }
