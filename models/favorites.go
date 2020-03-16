@@ -10,7 +10,7 @@ type Favorites struct {
 }
 
 func init() {
-	log.SetPrefix("[tweets]")
+	log.SetPrefix("[models/favorites]")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 

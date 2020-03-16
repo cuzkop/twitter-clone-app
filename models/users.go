@@ -16,7 +16,7 @@ type Users struct {
 }
 
 func init() {
-	log.SetPrefix("[users]]")
+	log.SetPrefix("[models/users]]")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 

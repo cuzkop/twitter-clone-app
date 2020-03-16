@@ -15,7 +15,7 @@ type DB struct {
 }
 
 func init() {
-	log.SetPrefix("[db]")
+	log.SetPrefix("[models/db]")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 

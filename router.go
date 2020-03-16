@@ -121,10 +121,21 @@ func tweetDeleteHandler(w http.ResponseWriter, r *http.Request) {
 func commentCreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	m := models.NewSqlHandler()
-	tweets := controllers.NewTweets()
-	tweets.UserID, _ = strconv.Atoi(mux.Vars(r)["user_id"])
 
-	err := json.NewDecoder(r.Body).Decode(&tweets)
+	users, err := controllers.NewUsers(mux.Vars(r)["screen_id"], m)
+	if err != nil {
+		e := Error{ErrorMsg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+
+	tweets := controllers.NewTweets()
+	tweets.UserID = users.ID
+	tweets.IsComment = 1
+	tweets.TweetID, _ = strconv.Atoi(mux.Vars(r)["tweet_id"])
+
+	err = json.NewDecoder(r.Body).Decode(&tweets)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusBadRequest)

@@ -12,7 +12,7 @@ type Followers struct {
 type FollowersList []Followers
 
 func init() {
-	log.SetPrefix("[followers]")
+	log.SetPrefix("[models/followers]")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 

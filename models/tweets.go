@@ -17,7 +17,7 @@ type Tweets struct {
 }
 
 func init() {
-	log.SetPrefix("[tweets]")
+	log.SetPrefix("[models/tweets]")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
