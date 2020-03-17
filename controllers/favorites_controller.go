@@ -3,10 +3,16 @@ package controllers
 import (
 	"app/models"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
+
+func init() {
+	log.SetPrefix("[controllers/favorites]")
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 func NewFavorites(r *http.Request) error {
 	m := models.NewSqlHandler()
@@ -20,6 +26,7 @@ func NewFavorites(r *http.Request) error {
 
 	err = json.NewDecoder(r.Body).Decode(&favorites)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 

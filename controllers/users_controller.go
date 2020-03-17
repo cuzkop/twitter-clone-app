@@ -1,6 +1,14 @@
 package controllers
 
-import "app/models"
+import (
+	"app/models"
+	"log"
+)
+
+func init() {
+	log.SetPrefix("[controllers/users]")
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 func NewUsers(screen_id string, m *models.DB) (models.Users, error) {
 	users := models.GetUsers()

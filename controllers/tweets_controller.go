@@ -3,11 +3,17 @@ package controllers
 import (
 	"app/models"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
+
+func init() {
+	log.SetPrefix("[controllers/tweets]")
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 func NewTweets(r *http.Request) error {
 	m := models.NewSqlHandler()
@@ -21,6 +27,7 @@ func NewTweets(r *http.Request) error {
 
 	err = json.NewDecoder(r.Body).Decode(&tweets)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -50,6 +57,7 @@ func NewComment(r *http.Request) error {
 
 	err = json.NewDecoder(r.Body).Decode(&tweets)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 

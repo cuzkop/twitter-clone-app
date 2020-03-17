@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"app/models"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -14,6 +15,11 @@ type Timeline struct {
 	ScreenID   string `json:"screen_id"`
 	Text       string `json:"text"`
 	CreatedAt  string `json:"created_at"`
+}
+
+func init() {
+	log.SetPrefix("[controllers/timeline]")
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
 func NewTimeline(r *http.Request) ([]Timeline, error) {
