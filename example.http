@@ -15,7 +15,7 @@ DELETE http://localhost:8080/tweets/cuzkop HTTP/1.1
 Content-Type: application/json
 
 {
-    "id": 19
+    "id": 22
 }
 
 ###
@@ -23,7 +23,7 @@ POST http://localhost:8080/favorites/cuzkop HTTP/1.1
 Content-Type: application/json
 
 {
-    "tweet_id": 3
+    "tweet_id": 1
 }
 
 ###
@@ -36,9 +36,9 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8080/tweets/cuzkop/18 HTTP/1.1
+POST http://localhost:8080/tweets/cuzkop/21 HTTP/1.1
 Content-Type: application/json
 
 {
-    "text": "hello comment"
+    "text": "hello comment2"
 }

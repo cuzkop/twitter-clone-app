@@ -2,11 +2,9 @@ package main
 
 import (
 	"app/controllers"
-	"app/models"
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -16,7 +14,7 @@ type Error struct {
 }
 
 func init() {
-	log.SetPrefix("[router]]")
+	log.SetPrefix("[router]")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
@@ -34,11 +32,8 @@ func buildRouter() http.Handler {
 
 func timelineHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	m := models.NewSqlHandler()
-	users, err := controllers.NewUsers(mux.Vars(r)["screen_id"], m)
 
-	timeline := controllers.NewTimeline()
-	timelines, err := timeline.GetTimeline(users, m)
+	timelines, err := controllers.NewTimeline(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusInternalServerError)
@@ -52,28 +47,8 @@ func timelineHandler(w http.ResponseWriter, r *http.Request) {
 
 func tweetCreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	m := models.NewSqlHandler()
 
-	users, err := controllers.NewUsers(mux.Vars(r)["screen_id"], m)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	tweets := controllers.NewTweets()
-	tweets.UserID = users.ID
-
-	err = json.NewDecoder(r.Body).Decode(&tweets)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	err = controllers.CreateTweet(tweets, m)
+	err := controllers.NewTweets(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusInternalServerError)
@@ -86,28 +61,8 @@ func tweetCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func tweetDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	m := models.NewSqlHandler()
 
-	users, err := controllers.NewUsers(mux.Vars(r)["screen_id"], m)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	tweets := controllers.NewTweets()
-	tweets.UserID = users.ID
-
-	err = json.NewDecoder(r.Body).Decode(&tweets)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	err = controllers.IsDeleteTweet(tweets, m)
+	err := controllers.NewTweets(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusInternalServerError)
@@ -120,33 +75,11 @@ func tweetDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func commentCreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	m := models.NewSqlHandler()
 
-	users, err := controllers.NewUsers(mux.Vars(r)["screen_id"], m)
+	err := controllers.NewComment(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	tweets := controllers.NewTweets()
-	tweets.UserID = users.ID
-	tweets.IsComment = 1
-	tweets.TweetID, _ = strconv.Atoi(mux.Vars(r)["tweet_id"])
-
-	err = json.NewDecoder(r.Body).Decode(&tweets)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	err = controllers.CreateTweet(tweets, m)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -156,28 +89,8 @@ func commentCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func favoriteCreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	m := models.NewSqlHandler()
 
-	users, err := controllers.NewUsers(mux.Vars(r)["screen_id"], m)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	favorites := controllers.NewFavorites()
-	favorites.UserID = users.ID
-
-	err = json.NewDecoder(r.Body).Decode(&favorites)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	err = controllers.CreateFavorite(favorites, m)
+	err := controllers.NewFavorites(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusInternalServerError)
@@ -190,30 +103,8 @@ func favoriteCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func favoriteDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	m := models.NewSqlHandler()
 
-	users, err := controllers.NewUsers(mux.Vars(r)["screen_id"], m)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	favorites := controllers.NewFavorites()
-	favorites.UserID = users.ID
-
-	err = json.NewDecoder(r.Body).Decode(&favorites)
-	if err != nil {
-		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
-		return
-	}
-
-	log.Println(favorites)
-
-	err = controllers.DeleteFavorite(favorites, m)
+	err := controllers.NewFavorites(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
 		w.WriteHeader(http.StatusInternalServerError)

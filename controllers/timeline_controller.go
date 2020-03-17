@@ -2,6 +2,9 @@ package controllers
 
 import (
 	"app/models"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Timeline struct {
@@ -13,8 +16,20 @@ type Timeline struct {
 	CreatedAt  string `json:"created_at"`
 }
 
-func NewTimeline() Timeline {
-	return Timeline{}
+func NewTimeline(r *http.Request) ([]Timeline, error) {
+	m := models.NewSqlHandler()
+	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
+	if err != nil {
+		return nil, err
+	}
+
+	timeline := Timeline{}
+	timelines, err := timeline.GetTimeline(users, m)
+	if err != nil {
+		return timelines, err
+	}
+
+	return timelines, nil
 }
 
 func (t *Timeline) GetTimeline(users models.Users, m *models.DB) ([]Timeline, error) {
