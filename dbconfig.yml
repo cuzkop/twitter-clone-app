@@ -1,0 +1,5 @@
+development:
+    dialect: mysql
+    datasource: root:PASSWORD@tcp(127.0.0.1)/twitter?parseTime=true
+    dir: db/migrations
+    table: migrations
