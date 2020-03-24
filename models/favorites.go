@@ -19,11 +19,14 @@ func GetFavorites() Favorites {
 }
 
 func (f Favorites) CreateFavorite(m *DB) error {
-	result := m.DB.Create(&f)
+    tx := m.DB.Begin()
+	result := tx.Create(&f)
 	if result.Error != nil {
+        tx.Rollback()
 		log.Println(result.Error)
 		return result.Error
-	}
+    }
+    tx.Commit()
 	return nil
 }
 

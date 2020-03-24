@@ -26,11 +26,14 @@ func GetTweets() Tweets {
 }
 
 func (t Tweets) CreateTweet(m *DB) error {
-	result := m.DB.Create(&t)
+    tx := m.DB.Begin()
+	result := tx.Create(&t)
 	if result.Error != nil {
+        tx.Rollback()
 		log.Println(result.Error)
 		return result.Error
-	}
+    }
+    tx.Commit()
 	return nil
 }
 
@@ -45,10 +48,13 @@ func (t Tweets) IsDeleteTweet(m *DB) error {
 	afterTweet.IsDeleted = 1
 	afterTweet.UpdatedAt = time.Now().UTC()
 
-	result := m.DB.Model(&t).Update(afterTweet)
+    tx := m.DB.Begin()
+	result := tx.Model(&t).Update(afterTweet)
 	if result.Error != nil {
+        tx.Rollback()
 		log.Println(result.Error)
 		return result.Error
-	}
+    }
+    tx.Commit()
 	return nil
 }
