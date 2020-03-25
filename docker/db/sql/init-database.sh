@@ -1,0 +1,1 @@
+mysql -u root -p twitter < "/docker-entrypoint-initdb.d/create-tables.sql"
