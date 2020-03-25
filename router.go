@@ -1,7 +1,7 @@
 package main
 
 import (
-	"twitter-clone-app/controllers"
+	"github.com/kazuki5555/twitter-clone-app/controllers"
 	"encoding/json"
 	"log"
 	"net/http"
