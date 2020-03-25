@@ -8,7 +8,6 @@
   - favorite
   - delete favorite
   - reply
-- Database construnction is [here](sql/)
 
 # 初めてのGolangアプリで苦労した点、難しかった点
 
