@@ -1,6 +1,6 @@
 # Overview 
 
-- Twitter Clone App with Golang
+- Twitter Clone App with Golang1.12
 - Only server side and endpoints are below
   - get timeline
   - create tweet
