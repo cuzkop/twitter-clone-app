@@ -1,9 +1,6 @@
 package models
 
 import (
-	// "database/sql"
-	// "database/sql"
-
 	"log"
 
 	"github.com/jinzhu/gorm"

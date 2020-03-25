@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"app/models"
+	"twitter-clone-app/models"
 	"log"
 )
 
