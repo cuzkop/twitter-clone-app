@@ -12,7 +12,5 @@ func init() {
 
 func main() {
 	log.Printf("main start.")
-	r := buildRouter()
-
-	http.ListenAndServe(":8080", r)
+	log.Fatal(http.ListenAndServe(":8080", buildRouter()))
 }
