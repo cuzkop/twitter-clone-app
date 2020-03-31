@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/kazuki5555/twitter-clone-app/controllers"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/kazuki5555/twitter-clone-app/controllers"
 
 	"github.com/gorilla/mux"
 )
@@ -30,19 +31,21 @@ func buildRouter() http.Handler {
 	return r
 }
 
-func timelineHandler(w http.ResponseWriter, r *http.Request) {
+func createResponse(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(data)
+}
 
+func timelineHandler(w http.ResponseWriter, r *http.Request) {
 	timelines, err := controllers.NewTimeline(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(e)
+		createResponse(w, http.StatusInternalServerError, e)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(timelines)
+	createResponse(w, http.StatusOK, timelines)
 }
 
 func tweetCreateHandler(w http.ResponseWriter, r *http.Request) {
