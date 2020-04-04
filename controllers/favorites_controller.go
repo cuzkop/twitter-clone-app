@@ -15,42 +15,41 @@ func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
-func CreateFavorite(r *http.Request) error {
+func PrepareFavorite(r *http.Request) (models.Favorites, *models.DB, error) {
 	m := models.NewSqlHandler()
+	favorites := models.GetFavorites()
 
 	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
 	if err != nil {
-		return err
+		return favorites, m, err
 	}
 
-	favorites := models.GetFavorites()
 	favorites.UserID = users.ID
 
 	err = json.NewDecoder(r.Body).Decode(&favorites)
 	if err != nil {
 		log.Println(err)
+		return favorites, m, err
+	}
+	return favorites, m, nil
+}
+
+func CreateFavorite(r *http.Request) error {
+	f, m, err := PrepareFavorite(r)
+	if err != nil {
+		log.Println(err)
 		return err
 	}
 
-	return favorites.CreateFavorite(m)
+	return f.CreateFavorite(m)
 }
 
 func DeleteFavorite(r *http.Request) error {
-	m := models.NewSqlHandler()
-
-	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
-	if err != nil {
-		return err
-	}
-
-	favorites := models.GetFavorites()
-	favorites.UserID = users.ID
-
-	err = json.NewDecoder(r.Body).Decode(&favorites)
+	f, m, err := PrepareFavorite(r)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	return favorites.DeleteFavorite(m)
+	return f.DeleteFavorite(m)
 }
