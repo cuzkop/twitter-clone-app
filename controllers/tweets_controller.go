@@ -34,12 +34,7 @@ func NewComment(r *http.Request) error {
 		return err
 	}
 
-	err = tweets.CreateTweet(m)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return tweets.CreateTweet(m)
 }
 
 func CreateTweet(r *http.Request) error {
