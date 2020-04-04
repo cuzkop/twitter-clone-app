@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"github.com/kazuki5555/twitter-clone-app/models"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/kazuki5555/twitter-clone-app/models"
 
 	"github.com/gorilla/mux"
 )
@@ -14,8 +15,9 @@ func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
-func NewFavorites(r *http.Request) error {
+func CreateFavorite(r *http.Request) error {
 	m := models.NewSqlHandler()
+
 	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
 	if err != nil {
 		return err
@@ -30,30 +32,25 @@ func NewFavorites(r *http.Request) error {
 		return err
 	}
 
-	if r.Method == "POST" {
-		err = CreateFavorite(favorites, m)
-	} else if r.Method == "DELETE" {
-		err = DeleteFavorite(favorites, m)
-	}
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return favorites.CreateFavorite(m)
 }
 
-func CreateFavorite(f models.Favorites, m *models.DB) error {
-	err := f.CreateFavorite(m)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+func DeleteFavorite(r *http.Request) error {
+	m := models.NewSqlHandler()
 
-func DeleteFavorite(f models.Favorites, m *models.DB) error {
-	err := f.DeleteFavorite(m)
+	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
 	if err != nil {
 		return err
 	}
-	return nil
+
+	favorites := models.GetFavorites()
+	favorites.UserID = users.ID
+
+	err = json.NewDecoder(r.Body).Decode(&favorites)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return favorites.DeleteFavorite(m)
 }

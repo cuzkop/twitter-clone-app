@@ -49,13 +49,10 @@ func timelineHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func tweetCreateHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	err := controllers.NewTweets(r)
+	err := controllers.CreateTweet(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(e)
+		createResponse(w, http.StatusInternalServerError, e)
 		return
 	}
 
@@ -63,13 +60,10 @@ func tweetCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func tweetDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	err := controllers.NewTweets(r)
+	err := controllers.IsDeleteTweet(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(e)
+		createResponse(w, http.StatusInternalServerError, e)
 		return
 	}
 
@@ -77,13 +71,10 @@ func tweetDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func commentCreateHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	err := controllers.NewComment(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(e)
+		createResponse(w, http.StatusInternalServerError, e)
 		return
 	}
 
@@ -91,13 +82,10 @@ func commentCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func favoriteCreateHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	err := controllers.NewFavorites(r)
+	err := controllers.CreateFavorite(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(e)
+		createResponse(w, http.StatusInternalServerError, e)
 		return
 	}
 
@@ -105,13 +93,10 @@ func favoriteCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func favoriteDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	err := controllers.NewFavorites(r)
+	err := controllers.DeleteFavorite(r)
 	if err != nil {
 		e := Error{ErrorMsg: err.Error()}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(e)
+		createResponse(w, http.StatusInternalServerError, e)
 		return
 	}
 

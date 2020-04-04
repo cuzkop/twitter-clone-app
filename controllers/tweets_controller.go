@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"github.com/kazuki5555/twitter-clone-app/models"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/kazuki5555/twitter-clone-app/models"
 
 	"github.com/gorilla/mux"
 )
@@ -13,34 +14,6 @@ import (
 func init() {
 	log.SetPrefix("[controllers/tweets]")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-}
-
-func NewTweets(r *http.Request) error {
-	m := models.NewSqlHandler()
-	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
-	if err != nil {
-		return err
-	}
-
-	tweets := models.GetTweets()
-	tweets.UserID = users.ID
-
-	err = json.NewDecoder(r.Body).Decode(&tweets)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	if r.Method == "POST" {
-		err = CreateTweet(tweets, m)
-	} else if r.Method == "DELETE" {
-		err = IsDeleteTweet(tweets, m)
-	}
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func NewComment(r *http.Request) error {
@@ -61,7 +34,7 @@ func NewComment(r *http.Request) error {
 		return err
 	}
 
-	err = CreateTweet(tweets, m)
+	err = tweets.CreateTweet(m)
 	if err != nil {
 		return err
 	}
@@ -69,18 +42,38 @@ func NewComment(r *http.Request) error {
 	return nil
 }
 
-func CreateTweet(t models.Tweets, m *models.DB) error {
-	err := t.CreateTweet(m)
+func CreateTweet(r *http.Request) error {
+	t, m, err := PrepareTweet(r)
 	if err != nil {
 		return err
 	}
-	return nil
+
+	return t.CreateTweet(m)
 }
 
-func IsDeleteTweet(t models.Tweets, m *models.DB) error {
-	err := t.IsDeleteTweet(m)
+func IsDeleteTweet(r *http.Request) error {
+	t, m, err := PrepareTweet(r)
 	if err != nil {
 		return err
 	}
-	return nil
+
+	return t.IsDeleteTweet(m)
+}
+
+func PrepareTweet(r *http.Request) (models.Tweets, *models.DB, error) {
+	m := models.NewSqlHandler()
+	tweets := models.GetTweets()
+	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
+	if err != nil {
+		return tweets, m, err
+	}
+
+	tweets.UserID = users.ID
+
+	err = json.NewDecoder(r.Body).Decode(&tweets)
+	if err != nil {
+		log.Println(err)
+		return tweets, m, err
+	}
+	return tweets, m, nil
 }
