@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"github.com/kazuki5555/twitter-clone-app/models"
 	"log"
 	"net/http"
+
+	"github.com/kazuki5555/twitter-clone-app/models"
 
 	"github.com/gorilla/mux"
 )
@@ -23,7 +24,7 @@ func init() {
 }
 
 func NewTimeline(r *http.Request) ([]Timeline, error) {
-	m := models.NewSqlHandler()
+	m := models.GetSqlHandler()
 	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
 	if err != nil {
 		return nil, err

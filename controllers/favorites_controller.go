@@ -16,7 +16,7 @@ func init() {
 }
 
 func PrepareFavorite(r *http.Request) (models.Favorites, *models.DB, error) {
-	m := models.NewSqlHandler()
+	m := models.GetSqlHandler()
 	favorites := models.GetFavorites()
 
 	users, err := NewUsers(mux.Vars(r)["screen_id"], m)

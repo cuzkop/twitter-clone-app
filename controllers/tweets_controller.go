@@ -17,7 +17,7 @@ func init() {
 }
 
 func NewComment(r *http.Request) error {
-	m := models.NewSqlHandler()
+	m := models.GetSqlHandler()
 	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func IsDeleteTweet(r *http.Request) error {
 }
 
 func PrepareTweet(r *http.Request) (models.Tweets, *models.DB, error) {
-	m := models.NewSqlHandler()
+	m := models.GetSqlHandler()
 	tweets := models.GetTweets()
 	users, err := NewUsers(mux.Vars(r)["screen_id"], m)
 	if err != nil {

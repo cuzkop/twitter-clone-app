@@ -18,14 +18,18 @@ func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
-func NewSqlHandler() *DB {
+func NewSqlHandler() {
+	conn, err := gorm.Open("mysql", "root:PASSWORD@tcp(127.0.0.1)/twitter?parseTime=true")
+	if err != nil {
+		log.Fatal(err)
+	}
+	sqlHandler = new(DB)
+	sqlHandler.DB = conn
+}
+
+func GetSqlHandler() *DB {
 	if sqlHandler == nil {
-		conn, err := gorm.Open("mysql", "root:PASSWORD@tcp(127.0.0.1)/twitter?parseTime=true")
-		if err != nil {
-			log.Fatal(err)
-		}
-		sqlHandler = new(DB)
-		sqlHandler.DB = conn
+		NewSqlHandler()
 	}
 
 	return sqlHandler
