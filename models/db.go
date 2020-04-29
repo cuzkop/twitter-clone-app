@@ -11,17 +11,22 @@ type DB struct {
 	DB *gorm.DB
 }
 
+var sqlHandler *DB
+
 func init() {
 	log.SetPrefix("[models/db]")
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
 func NewSqlHandler() *DB {
-	conn, err := gorm.Open("mysql", "root:PASSWORD@tcp(127.0.0.1)/twitter?parseTime=true")
-	if err != nil {
-		log.Fatal(err)
+	if sqlHandler == nil {
+		conn, err := gorm.Open("mysql", "root:PASSWORD@tcp(127.0.0.1)/twitter?parseTime=true")
+		if err != nil {
+			log.Fatal(err)
+		}
+		sqlHandler = new(DB)
+		sqlHandler.DB = conn
 	}
-	sqlHandler := new(DB)
-	sqlHandler.DB = conn
+
 	return sqlHandler
 }
